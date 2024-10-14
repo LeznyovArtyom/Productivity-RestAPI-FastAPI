@@ -1,0 +1,106 @@
+body {
+    font-family: "Montserrat", sans-serif;
+    background-color: #F0F3F6;
+}
+
+.logo_image img {
+    width: 60px;
+    height: 60px;
+}
+.logo_name {
+    font-family: "Montaga", serif;
+    font-size: 32px;
+    color: #000;
+    font-weight: 400;
+}
+.side_panel {
+    background-color: #F8F9FA;
+    border-radius: 15px;
+    height: 100vh;
+    font-size: 28px;
+}
+.nav_links {
+    margin: 10rem 0;
+}
+.active {
+    font-weight: 600;
+}
+.boundary_line {
+    height: 2px;
+    background-color: #F0F3F6;
+}
+
+.main_panel {
+    font-size: 20px;
+}
+#user_image {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+}
+#user_role {
+    font-size: 16px;
+
+}
+
+.page_title {
+    font-size: 32px;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+.task {
+    height: 110px;
+    background-color: #fff;
+    border-radius: 15px;
+}
+.importance {
+    height: 87px;
+}
+.task_deadline {
+    font-size: 16px;
+    color: #5F5151;
+}
+.task_description {
+    background-color: #DEE2E6;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 40%;
+    height: 100%;
+}
+.resume_button {
+    background-color: #7BFFA0;
+    border-radius: 15px;
+    font-size: inherit;
+    width: 180px;    
+}
+.trash_button {
+    background-color: #FFA599;
+    border-radius: 15px;
+    font-size: inherit;
+    width: 180px;
+}
+
+.status-open {
+    background-color: #BEB1E3;
+}
+.status-in-progress {
+    background-color: #99CEFF;
+}
+.status-completed {
+    background-color: #9BFF99;
+}
+.task_status {
+    border-radius: 15px;
+}
+
+.task_elems {
+    width: 100%;
+    max-width: 30%;
+}
+.task_buttons {
+    width: 100%;
+    max-width: 30%;
+}

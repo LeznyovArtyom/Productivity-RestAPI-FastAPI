@@ -1,0 +1,93 @@
+body {
+    font-family: "Montserrat", sans-serif;
+    background-color: #F0F3F6;
+}
+
+.logo_image img {
+    width: 60px;
+    height: 60px;
+}
+.logo_name {
+    font-family: "Montaga", serif;
+    font-size: 32px;
+    color: #000;
+    font-weight: 400;
+}
+.side_panel {
+    background-color: #F8F9FA;
+    border-radius: 15px;
+    height: 100vh;
+    font-size: 28px;
+}
+.nav_links {
+    margin: 10rem 0;
+}
+.active {
+    font-weight: 600;
+}
+.boundary_line {
+    height: 2px;
+    background-color: #F0F3F6;
+}
+
+.main_panel {
+    font-size: 20px;
+    height: 100vh;
+}
+#user_image {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+}
+#user_role {
+    font-size: 16px;
+
+}
+
+#task_name {
+    font-size: 32px;
+    margin-top: 100px;
+    margin-bottom: 50px;
+}
+.importance_container, .status_container, .deadline_container {
+    background-color: #fff;
+    border-radius: 15px;
+}
+#importance_image {
+    height: 87px;
+}
+#status_filling {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+.status-open {
+    background-color: #BEB1E3;
+}
+.status-in-progress {
+    background-color: #99CEFF;
+}
+.status-completed {
+    background-color: #9BFF99;
+}
+.task_indicators {
+    margin-bottom: 50px;
+}
+#task_description {
+    background-color: #fff;
+    height: 500px;
+    border-radius: 15px;
+}
+
+#saveTaskButton {
+    background-color: #99CEFF;
+    font-size: inherit;
+    border-radius: 15px;
+}
+
+.delete_task {
+    background-color: #FFA599;
+    font-size: inherit;
+    border-radius: 15px;
+    width: 200px;
+}

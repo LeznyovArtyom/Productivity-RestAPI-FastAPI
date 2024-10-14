@@ -1,0 +1,31 @@
+body {
+    background-image: url("../images/bg.jpg");
+    background-size: cover;
+    font-family: "Montserrat", sans-serif;
+    font-size: 32px;
+}
+
+.logo {
+    margin: 100px 0;
+}
+.logo_image img {
+    width: 100px;
+    height: 100px;
+}
+.logo_name {
+    font-family: "Montaga", serif;
+    font-size: 64px;
+    color: #000;
+    font-weight: 400;
+}
+.description {
+    font-size: 32px;
+}
+.buttons {
+    margin: 100px 0;
+}
+.redirect_button {
+    background-color: #B6DCFF;
+    font-size: 32px;
+    border-radius: 20px;
+}

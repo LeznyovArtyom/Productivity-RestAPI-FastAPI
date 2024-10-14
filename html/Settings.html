@@ -56,61 +56,69 @@
                             </div>
                             <div class="right_elems d-flex align-items-center">
                                 <div class="ms-5 me-3" id="current_date"></div>
-                                <img src="/images/calendar.svg" alt="" class="calendar" />
+                                <img src="/images/calendar.svg" alt="Календарь" class="calendar" />
                             </div>
                         </div>
                         <div class="my-5 page_title">Настройки</div>
 
-                        <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="change_title me-5">Имя</div>
-                                <input type="text" class="change_input border-0 p-2" id="text_name">
+                        <form>
+                            <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="change_title me-5">Имя</div>
+                                    <input type="text" class="change_input border-0 p-2" id="text_name" placeholder="" name="user_name">
+                                </div>
+                                <button type="submit" class="btn text-white change_button px-4" id="changeName">Изменить</button>
                             </div>
-                            <button type="button" class="btn text-white change_button px-4" id="changeName">Изменить</button>
-                        </div>
-                        <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="change_title me-5">Логин</div>
-                                <input type="text" class="change_input border-0 p-2" id="text_login">
-                                <div class="invalid-feedback ms-3" id="login_feedback">Логин должен содержать не менее 3 символов и состоять только из букв и цифр.</div>
+                        </form>
+                        <form>
+                            <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="change_title me-5">Логин</div>
+                                    <input type="text" class="change_input border-0 p-2" id="text_login" placeholder="" name="user_login_change">
+                                </div>
+                                <button type="submit" class="btn text-white change_button px-4" id="changeLogin">Изменить</button>
                             </div>
-                            <button type="button" class="btn text-white change_button px-4" id="changeLogin">Изменить</button>
-                        </div>
-                        <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="change_title me-5">Пароль</div>
-                                <input type="text" class="change_input border-0 p-2" id="text_password">
-                                <div class="invalid-feedback ms-3" id="password_feedback">Пароль должен содержать не менее 6 символов.</div>
+                        </form>
+                        <form>
+                            <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="change_title me-5">Пароль</div>
+                                    <input type="text" class="change_input border-0 p-2" id="text_password" name="user_password">
+                                </div>
+                                <button type="submit" class="btn text-white change_button px-4" id="changePassword">Изменить</button>
                             </div>
-                            <button type="button" class="btn text-white change_button px-4" id="changePassword">Изменить</button>
-                        </div>
-                        <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="change_title me-5">Роль</div>
-                                <select class="form-select change_select text-dark" id="role_select">
-
-                                </select>
+                        </form>
+                        <form>
+                            <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="change_title me-5">Роль</div>
+                                    <select class="form-select change_select text-dark" id="role_select" name="user_role_id"></select>
+                                </div>
+                                <button type="submit" class="btn text-white change_button px-4" id="changeRole">Изменить</button>
                             </div>
-                            <button type="button" class="btn text-white change_button px-4" id="changeRole">Изменить</button>
-                        </div>
-                        <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
-                            <div class="d-flex align-items-center">
-                                <div class="change_title me-5">Изображение</div>
-                                <input type="file" class="change_image" id="account_image" onchange="download(this)">
-                                <img src="" alt="Изображение профиля" class="ms-5" id="profile_image">
+                        </form>
+                        <form>
+                            <div class="change_container w-100 d-flex align-items-center justify-content-between p-5 py-3 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="change_title me-5">Изображение</div>
+                                    <input type="file" class="change_image" id="account_image" onchange="download(this)" name="user_image">
+                                    <img src="" alt="Изображение профиля" class="ms-5" id="profile_image">
+                                </div>
+                                <button type="submit" class="btn text-white change_button px-4" id="changeImage">Изменить</button>
                             </div>
-                            <button type="button" class="btn text-white change_button px-4" id="changeImage">Изменить</button>
-                        </div>
+                        </form>
                     </div>
                     <div class="redirect_buttons d-flex justify-content-between mb-3">
-                        <button type="button" class="btn text-white" id="delete_account_button" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">Удалить аккаунт</button>
-                        <button type="button" class="btn text-white" id="go_out_button">Выйти</button>
+                        <button type="button" class="btn text-white" id="delete_account_button" data-bs-toggle="modal" data-bs-target="#deleteAccountModal" name="delete_account_button">Удалить аккаунт</button>
+                        <form>
+                            <button type="submit" class="btn text-white" id="go_out_button" name="logout">Выйти</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Модальное окно удаления аккаунта-->
+        <!-- Модальное окно удаления аккаунта -->
         <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -121,7 +129,9 @@
                     <div class="modal-body">Все задачи удалятся безвозвратно</div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                        <button type="button" class="btn btn-primary" id="deleteButton">Удалить</button>
+                        <form>
+                            <button type="submit" class="btn btn-primary" id="deleteButton">Удалить</button>
+                        </form>
                     </div>
                 </div>
             </div>

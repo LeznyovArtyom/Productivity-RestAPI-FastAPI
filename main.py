@@ -1,26 +1,23 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
-from datetime import datetime
-import mysql.connector
+from datetime import datetime, timedelta, timezone
 from config import data
-from typing import Optional
+from typing import Annotated
 import os
+from passlib.context import CryptContext
+import jwt
+from database import get_session
+from models import User as UserModel
+from sqlmodel import Session, select
+from sqlalchemy.orm import joinedload
+from base64 import b64encode
 
 
 app = FastAPI()
-
-
-def get_db_connection():
-    return mysql.connector.connect(
-        host=data["host"],
-        port=data["port"],
-        user=data["user"],
-        password=data["password"],
-        database=data["database"]
-    )
 
 
 app.add_middleware(
@@ -37,12 +34,17 @@ app.mount("/js", StaticFiles(directory="js"), name="js")
 app.mount("/images", StaticFiles(directory="images"), name="images")
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str | None = None
+
+
 class User(BaseModel):
     name: str
     login: str
     password: str
-    image: Optional[str] = None
-    role_id: Optional[int] = None
+    image: bytes | None = None
+    role_id: int | None = None
 
 
 class UserLogin(BaseModel):
@@ -69,6 +71,57 @@ class Imposrtanse(BaseModel):
 
 class Status(BaseModel):
     name: str
+
+
+SECRET_KEY = "Praktika2024"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Токен истек",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Невалидный токен",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+
+def encode_image_to_base64(image_data):
+    return b64encode(image_data).decode('utf-8')
 
 
 @app.get("/")
@@ -110,56 +163,64 @@ def get_authorization_page():
 
 # Зарегистрировать пользователя
 @app.post("/users/register")
-def register_new_user(user_data: User):
-    print(user_data)
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM user WHERE login = %s", (user_data.login,))
-    existing_user = cursor.fetchone()
+def register_new_user(user_data: User, session: Session = Depends(get_session)):
+    existing_user = session.exec(select(UserModel).where(UserModel.login == user_data.login)).first()
 
     if existing_user:
-        raise HTTPException(status_code=400, detail="Пользователь с таким логином уже существует")
+        raise HTTPException(status_code=409, detail="Пользователь с таким логином уже существует")
     
+    hashed_password = get_password_hash(user_data.password)
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     image_path = os.path.join(current_dir, 'images/профиль.jpg')
     # Читаем изображение как байты
     with open(image_path, 'rb') as image_file:
         image_data = image_file.read()
 
-    cursor.execute("INSERT INTO user (name, login, password, image, role_id) VALUES (%s, %s, %s, %s, %s)", (user_data.name, user_data.login, user_data.password, image_data, 1))
+    new_user = UserModel(
+        name=user_data.name,
+        login=user_data.login,
+        password=hashed_password,
+        image=image_data,
+        role_id=1
+    )
 
-    connection.commit()
-    cursor.close()
-    return {"message", "Пользователь успешно зарегистрирован"}
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+
+    return JSONResponse({"message": "Пользователь успешно зарегистрирован"}, status_code=201)
 
 
 # Авторизовать пользователя
 @app.post("/users/login")
-def login_user(user_data: UserLogin):
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
+def login_user(user_data: UserLogin, session: Session = Depends(get_session)):
+    user = session.exec(select(UserModel).where(UserModel.login == user_data.login)).first()
 
-    cursor.execute("SELECT * FROM user WHERE login = %s AND password = %s", (user_data.login, user_data.password))
-    result = cursor.fetchone()
-    cursor.close()
-
-    if result:
-        return {"user_id": result['id']}
+    if user and verify_password(user_data.password, user.password):
+        access_token = create_access_token(data={"sub": user_data.login}, expires_delta=timedelta(ACCESS_TOKEN_EXPIRE_MINUTES))
+        return JSONResponse({"access_token": access_token, "token_type": "bearer"})
     else:
-        raise HTTPException(status_code=401, detail="Неверный логин или пароль")
+        raise HTTPException(status_code=401, detail="Неправильные данные для входа")
+    
+# Получить информацию о пользователе
+@app.get("/users/me")
+async def get_info_about_me(token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    user_login = decode_access_token(token)
 
+    user = session.exec(select(UserModel).options(joinedload(UserModel.role)).where(UserModel.login == user_login)).first()
 
-
-    # data = await request.json()
-    # async with SessionLocal() as session:
-    #     async with session.begin():
-    #         result = await session.execute(select(User).filter(User.login == data['login']))
-    #         user = result.scalar_one_or_none()
-    #         if user and verify_password(data['password'], user.password):
-    #             token = create_access_token(data={'sub': user.login})
-    #             return JSONResponse({"access_token": token}, status_code=200)
-    #         return JSONResponse({"error": "Неправильные данные"}, status_code=401)
-
+    if user:
+        image_base64 = encode_image_to_base64(user.image)
+        return JSONResponse({"User": {
+            "id": user.id,
+            "name": user.name,
+            "login": user.login,
+            "role": user.role.name,
+            "role_id": user.role.id,
+            "image": image_base64
+        }})
+    return JSONResponse({"error": "Пользователь не найден"}, status_code=404)
 
 
 # from starlette.applications import Starlette

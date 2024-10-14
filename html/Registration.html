@@ -20,28 +20,28 @@
                         <div class="logo_name">Productivity</div>
                     </div>
                 </a>
-                <div class="title mb-5 text-center">Регистрация</div>
+                <div class="title my-5 text-center" id="registration_title">Регистрация</div>
                 <form class="needs-validation" novalidate id="registration_form">
                     <div class="mb-3">
-                        <input type="text" class="form-control register_input" id="name" required placeholder="Имя">
+                        <input type="text" class="form-control register_input" id="name" name="name" required placeholder="Имя">
                         <div class="invalid-feedback">
                             Введите свое имя
                         </div>
                     </div>
                     <div class="mb-3">
-                        <input type="text" class="form-control register_input" id="login" required placeholder="Логин">
+                        <input type="text" class="form-control register_input" id="login" name="login" required placeholder="Логин">
                         <div class="invalid-feedback">
                             Логин должен быть не менее 3 символов и содержать только буквы и цифры
                         </div>
                     </div>
                     <div class="mb-3">
-                        <input type="password" class="form-control register_input" id="password" required minlength="6" placeholder="Пароль">
+                        <input type="password" class="form-control register_input" id="password" name="password" required minlength="6" placeholder="Пароль">
                         <div class="invalid-feedback">
                             Пароль должен быть не менее 6 символов
                         </div>
                     </div>
                     <div class="mb-3">
-                        <input type="password" class="form-control register_input" id="confirmPassword" required  placeholder="Повторите пароль">
+                        <input type="password" class="form-control register_input" id="confirmPassword" name="confirmPassword" required  placeholder="Повторите пароль">
                         <div class="invalid-feedback">
                             Пароли должны совпадать
                         </div>

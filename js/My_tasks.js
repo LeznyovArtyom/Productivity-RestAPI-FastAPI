@@ -2,9 +2,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     const accessToken = getCookie('access_token');
 
-    if (!accessToken) {
-        redirectToIndexPage();
-    }
+    // if (!accessToken) {
+    //     window.location.href = "/";
+    // }
 
     // Получаем задачи из базы данных
     getTasks();
@@ -145,6 +145,7 @@ function formatDate(dateString) {
 // Получение информации о пользователе
 function getUser() {
     const accessToken = getCookie('access_token');
+    console.log('accessToken:', accessToken);
     
     // Отправляем AJAX запрос к API
     fetch(`/users/me`, {

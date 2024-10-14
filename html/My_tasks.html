@@ -59,23 +59,23 @@
                         </div>
                     </div>
                     <div class="my-5 d-flex justify-content-between">
-                        <div>
+                        <form>
                             <div class="sort_container d-flex align-items-center mb-4">
                                 <div class="sort_text">Сортировать по:</div>
-                                <select class="form-select sort_select text-dark mx-3" id="priority_select">
+                                <select class="form-select sort_select text-dark mx-3" id="priority_select" name="priority_sort">
                                     <option value="default" selected>Приоритет</option>
                                     <option value="highest">Самый высокий</option>
                                     <option value="lowest">Самый низкий</option>
                                 </select>
-                                <select class="form-select sort_select text-dark mx-3" id="deadline_select">
+                                <select class="form-select sort_select text-dark mx-3" id="deadline_select", name="deadline_sort">
                                     <option value="default" selected>Дедлайн</option>
                                     <option value="soonest">Ближайшие сроки</option>
                                     <option value="latest">Дальние сроки</option>
                                 </select>
                             </div>
                             <div class="filter_container d-flex align-items-center">
-                                <div class="sort_text">Фильтровать по:</div>
-                                <select class="form-select filter_select text-dark mx-3" id="importance_select">
+                                <div class="filter_text">Фильтровать по:</div>
+                                <select class="form-select filter_select text-dark mx-3" id="importance_select", name="importance_filter">
                                     <option value="default" selected>Важность</option>
                                     <option value="1">Критическая</option>
                                     <option value="2">Высокая</option>
@@ -83,19 +83,21 @@
                                     <option value="4">Низкая</option>
                                     <option value="5">Очень низкая</option>
                                 </select>
-                                <select class="form-select filter_select text-dark mx-3" id="status_select">
+                                <select class="form-select filter_select text-dark mx-3" id="status_select", name="status_filter">
                                     <option value="default" selected>Статус</option>
                                     <option value="Открытая">Открытая</option>
                                     <option value="В процессе">В процессе</option>
-                                    <option value="Выполнено">Выполнено</option>
                                 </select>
+                                <button type="submit" class="btn apply_filters px-4" onclick="window.location.href='/my_tasks'">Применить</button>
                             </div>
-                        </div>
-                        <div class="d-flex align-items-center">
+                        </form>
+                        <div class="d-flex align-items-center justify-content-between">
                             <button type="button" class="btn add_task" onclick="window.location.href='/add_task'">Добавить задачу</button>
                         </div>
                     </div>
-                    <div id="tasks_container"></div>
+                    <div id="tasks_container">
+                        
+                    </div>
                 </div>
             </div>
         </div>

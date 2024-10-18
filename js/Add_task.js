@@ -20,7 +20,7 @@ function getUser() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()
@@ -88,7 +88,7 @@ form.addEventListener("submit", async e => {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         form.reset(); // Очищаем форму

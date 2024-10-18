@@ -22,6 +22,10 @@ body {
 .nav_links {
     margin: 10rem 0;
 }
+.nav-item {
+    width: 227px;
+}
+
 .active {
     font-weight: 600;
 }
@@ -47,7 +51,7 @@ body {
     font-size: inherit;
     border-radius: 20px;
 }
-.add_task {
+.add_task, .apply_filters {
     background-color: #B6DCFF;
     border-radius: 20px;
     color: #fff;
@@ -96,4 +100,7 @@ a {
 }
 .status-completed {
     background-color: #9BFF99;
+}
+.status-removed {
+    background-color: #FFA599;
 }

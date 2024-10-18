@@ -8,7 +8,7 @@ DATABASE_SERVER_URL = f"mysql+pymysql://{data['user']}:{data['password']}@{data[
 DATABASE_URL = f"mysql+pymysql://{data['user']}:{data['password']}@{data['host']}:{data['port']}/{data['database']}"
 
 engine_without_db = create_engine(DATABASE_SERVER_URL, echo=True, future=True)
-engine = create_engine(DATABASE_URL, echo=True, future=True)
+engine = create_engine(DATABASE_URL, future=True)
 
 
 def create_database_if_not_exists():

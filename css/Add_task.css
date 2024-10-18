@@ -22,6 +22,9 @@ body {
 .nav_links {
     margin: 10rem 0;
 }
+.nav-item {
+    width: 227px;
+}
 .boundary_line {
     height: 2px;
     background-color: #F0F3F6;
@@ -65,10 +68,6 @@ body {
 .importance_container {
     margin-right: 150px;
 }
-
-
-
-
 
 .add_task {
     background-color: #B6DCFF;

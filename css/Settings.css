@@ -22,6 +22,10 @@ body {
 .nav_links {
     margin: 10rem 0;
 }
+.nav-item {
+    width: 227px;
+}
+
 .active {
     font-weight: 600;
 }

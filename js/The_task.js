@@ -25,7 +25,7 @@ function getUser() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()
@@ -79,7 +79,7 @@ function getTask() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()
@@ -119,6 +119,8 @@ function displayTaskDetails(task) {
 
 // Сохранение изменений задачи
 function saveTask() {
+    event.preventDefault();
+    
     const accessToken = getCookie('access_token');
     let urlParams = new URLSearchParams(window.location.search);
     let task_id = urlParams.get('id');
@@ -128,6 +130,7 @@ function saveTask() {
     const task_importance_id = document.getElementById('importance_value').value;
     const task_status_id = document.getElementById('status_value').value;
     const task_deadline = document.getElementById('deadline_value').value;
+
 
     const updatedTask = {
         name: task_name,
@@ -146,11 +149,11 @@ function saveTask() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         if (response.ok) {
-            window.location.reload();
+            window.location.href = `/my_tasks`;
         } else {
             throw new Error('Ошибка при обновлении задачи');
         }
@@ -171,6 +174,7 @@ function formatDate(dateString) {
 
 // Перемещение задачи в корзину
 document.getElementById('deleteButton').addEventListener('click', function() {
+    event.preventDefault();
     const accessToken = getCookie('access_token');
     let urlParams = new URLSearchParams(window.location.search);
     let task_id = urlParams.get('id');
@@ -179,11 +183,12 @@ document.getElementById('deleteButton').addEventListener('click', function() {
         method: 'PUT',
         body: JSON.stringify({'status_id': 4}),
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         window.location.href = '/my_tasks';

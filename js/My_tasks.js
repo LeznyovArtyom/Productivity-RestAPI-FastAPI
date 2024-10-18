@@ -2,9 +2,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     const accessToken = getCookie('access_token');
 
-    // if (!accessToken) {
-    //     window.location.href = "/";
-    // }
+    if (!accessToken) {
+        window.location.href = "/";
+    }
 
     // Получаем задачи из базы данных
     getTasks();
@@ -35,7 +35,7 @@ function getTasks() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()
@@ -53,7 +53,6 @@ function displayTasks(tasks) {
     // Очищаем контейнер перед добавлением новых задач
     var tasksContainer = document.getElementById('tasks_container');
     tasksContainer.innerHTML = '';
-    console.log(tasks);
 
     let importanceImage = {
         "Критическая": "/images/critical_importance.png", 
@@ -145,7 +144,6 @@ function formatDate(dateString) {
 // Получение информации о пользователе
 function getUser() {
     const accessToken = getCookie('access_token');
-    console.log('accessToken:', accessToken);
     
     // Отправляем AJAX запрос к API
     fetch(`/users/me`, {
@@ -156,7 +154,7 @@ function getUser() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()

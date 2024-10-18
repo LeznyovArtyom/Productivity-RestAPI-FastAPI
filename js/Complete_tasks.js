@@ -23,7 +23,7 @@ function getTasks() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()
@@ -58,25 +58,23 @@ function displayTasks(tasks) {
 
     tasks.forEach(function (task) {
         if (task.status == "Выполнено") {
-            let taskElement = document.createElement('a');
-            taskElement.href = "/the_task?id=" + task.id;
-            taskElement.innerHTML = `
+            taskElement = `
                 <div class="task w-100 d-flex align-items-center justify-content-between pe-5 ps-3 py-3 mb-4">
-                    <div class="d-flex task_elems">
+                    <a href="/the_task?id=${task.id}" class="d-flex task_elems">
                         <img src="${importanceImage[task.importance]}" alt="Важность" class="importance" />
                         <div class=" d-flex flex-column justify-content-between my-2 ms-3">
                             <div class="task_name">${truncateString(task.name, 70)}</div>
                             <div class="task_deadline">${formatDate(task.deadline)}</div>
                         </div>
-                    </div>
-                    <div class="task_description py-2 px-4 w-100">${truncateString(task.description, 150)}</div>
+                    </a>
+                    <a href="/the_task?id=${task.id}" class="task_description py-2 px-4 w-100">${truncateString(task.description, 150)}</a>
                     <div class="task_buttons text-white d-flex justify-content-end">
                         <button type="button" class="btn text-white me-3 resume_button" data-task-id="${task.id}">Возобновить</button>
                         <button type="button" class="btn text-white trash_button" data-task-id="${task.id}">В корзину</button>
                     </div>
                 </div>
             `;
-            tasksContainer.appendChild(taskElement);
+            tasksContainer.innerHTML = taskElement;
         }
     });
 
@@ -127,7 +125,7 @@ function updateTaskStatus(taskId, status) {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         if (response.ok) {
@@ -163,7 +161,7 @@ function getUser() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()

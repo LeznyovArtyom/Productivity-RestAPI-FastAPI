@@ -22,6 +22,9 @@ body {
 .nav_links {
     margin: 10rem 0;
 }
+.nav-item {
+    width: 227px;
+}
 .active {
     font-weight: 600;
 }
@@ -69,6 +72,9 @@ body {
 }
 .status-completed {
     background-color: #9BFF99;
+}
+.status-removed {
+    background-color: #FFA599;
 }
 .task_indicators {
     margin-bottom: 50px;

@@ -20,7 +20,7 @@ class User(SQLModel, table=True):
     role_id: Optional[int] = Field(default=None, foreign_key="role.id")
     
     role: Optional[Role] = Relationship(back_populates="users")
-    tasks: List["Task"] = Relationship(back_populates="user")
+    tasks: List["Task"] = Relationship(back_populates="user", cascade_delete=True)
 
 
 class Importance(SQLModel, table=True):

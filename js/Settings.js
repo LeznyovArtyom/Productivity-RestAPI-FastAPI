@@ -20,7 +20,7 @@ function loadUserAndRoles() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()
@@ -35,7 +35,7 @@ function loadUserAndRoles() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         return response.json()
@@ -174,8 +174,14 @@ async function updateUser(field, value) {
         body: JSON.stringify({[field]: value})
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 1) {
             window.location.href = "/";
+        }
+        return response.json()
+    })
+    .then(data => {
+        if (data.new_token) {
+            setCookie('access_token', data.new_token);
         }
         alert('Данные успешно обновлены');
         window.location.reload();
@@ -196,7 +202,7 @@ document.getElementById('deleteButton').addEventListener('click', function() {
         }
     })
     .then(response => {
-        if (response.status === 403) {
+        if (response.status === 401) {
             window.location.href = "/";
         }
         deleteCookie('access_token'); // Удаляем куки с токеном доступа
@@ -227,4 +233,29 @@ const getCookie = (name) => {
 // Функция удаления куки
 const deleteCookie = (name) => {
     document.cookie = name + '=; Max-Age=-99999999; path=/';
+}
+
+
+// Функция установки куки
+const setCookie = (name, value, options = {}) => {
+    options = {
+        path: '/',
+        ...options
+    };
+
+    if (options.expires instanceof Date) {
+        options.expires = options.expires.toUTCString();
+    }
+
+    let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+    for (let optionKey in options) {
+        updatedCookie += "; " + optionKey;
+        let optionValue = options[optionKey];
+        if (optionValue !== true) {
+            updatedCookie += "=" + optionValue;
+        }
+    }
+
+    document.cookie = updatedCookie;
 }

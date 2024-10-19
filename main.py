@@ -2,19 +2,18 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
-from datetime import datetime, timedelta, timezone
-from config import data
 from typing import Annotated
-import os
 from passlib.context import CryptContext
 import jwt
 from database import get_session
 from models import User as UserModel, Task as TaskModel, Role as RoleModel
 from sqlmodel import Session, select
 from sqlalchemy.orm import joinedload
+from datetime import datetime, timedelta, timezone
 from base64 import b64encode, b64decode
+import os
 
 
 app = FastAPI()
@@ -79,14 +78,6 @@ class TaskUpdate(BaseModel):
     deadline: str | None = None
 
 
-class Importanse(BaseModel):
-    name: str
-
-
-class Status(BaseModel):
-    name: str
-
-
 SECRET_KEY = "Praktika2024"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -140,7 +131,7 @@ def encode_image_to_base64(image_data):
 
 @app.get("/")
 def get_index_page():
-    return FileResponse("index.html")
+    return FileResponse("html/index.html")
 
 @app.get("/authorization")
 def get_authorization_page():
@@ -177,7 +168,7 @@ def get_authorization_page():
 
 # Зарегистрировать пользователя
 @app.post("/users/register")
-def register_new_user(user_data: User, session: Session = Depends(get_session)):
+async def register_new_user(user_data: User, session: Session = Depends(get_session)):
     existing_user = session.exec(select(UserModel).where(UserModel.login == user_data.login)).first()
 
     if existing_user:
@@ -208,7 +199,7 @@ def register_new_user(user_data: User, session: Session = Depends(get_session)):
 
 # Авторизовать пользователя
 @app.post("/users/login")
-def login_user(user_data: UserLogin, session: Session = Depends(get_session)):
+async def login_user(user_data: UserLogin, session: Session = Depends(get_session)):
     user = session.exec(select(UserModel).where(UserModel.login == user_data.login)).first()
 
     if user and verify_password(user_data.password, user.password):

@@ -51,7 +51,7 @@ body {
     font-size: inherit;
     border-radius: 20px;
 }
-.add_task, .apply_filters {
+.add_task {
     background-color: #B6DCFF;
     border-radius: 20px;
     color: #fff;

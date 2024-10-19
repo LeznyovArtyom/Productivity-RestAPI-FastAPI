@@ -41,7 +41,6 @@ function displayTasks(tasks) {
     // Очищаем контейнер перед добавлением новых задач
     var tasksContainer = document.getElementById('tasks_container');
     tasksContainer.innerHTML = '';
-    console.log(tasks);
 
     let importanceImage = {
         "Критическая": "/images/critical_importance.png", 

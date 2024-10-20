@@ -16,7 +16,7 @@ from base64 import b64encode, b64decode
 import os
 
 
-app = FastAPI()
+app = FastAPI(title="API Productivity", description="API для управления пользователями и задачами", version="1.0.0")
 
 
 app.add_middleware(
@@ -129,46 +129,54 @@ def encode_image_to_base64(image_data):
     return b64encode(image_data).decode('utf-8')
 
 
-@app.get("/")
+@app.get("/", summary="Получить индексную страницу", tags=["Страницы"])
 def get_index_page():
     return FileResponse("html/index.html")
 
-@app.get("/authorization")
+@app.get("/authorization", summary="Получить страницу авторизации", tags=["Страницы"])
 def get_authorization_page():
     return FileResponse("html/Authorization.html")
 
-@app.get("/registration")
-def get_authorization_page():
+@app.get("/registration", summary="Получить страницу регистрации", tags=["Страницы"])
+def get_registration_page():
     return FileResponse("html/Registration.html")
 
-@app.get("/my_tasks")
-def get_authorization_page():
+@app.get("/my_tasks", summary="Получить страницу авторизации", tags=["Страницы"])
+def get_my_tasks_page():
     return FileResponse("html/My_tasks.html")
 
-@app.get("/complete_tasks")
-def get_authorization_page():
+@app.get("/complete_tasks", summary="Получить страницу завершенных задач", tags=["Страницы"])
+def get_complete_tasks_page():
     return FileResponse("html/Complete_tasks.html")
 
-@app.get("/the_trash")
-def get_authorization_page():
+@app.get("/the_trash", summary="Получить страницу корзины", tags=["Страницы"])
+def get_the_trash_page():
     return FileResponse("html/The_trash.html")
 
-@app.get("/add_task")
-def get_authorization_page():
+@app.get("/add_task", summary="Получить страницу добавления задачи", tags=["Страницы"])
+def get_add_task_page():
     return FileResponse("html/Add_task.html")
 
-@app.get("/the_task")
-def get_authorization_page():
+@app.get("/the_task", summary="Получить страницу задачи", tags=["Страницы"])
+def get_the_task_page():
     return FileResponse("html/The_task.html")
 
-@app.get("/settings")
-def get_authorization_page():
+@app.get("/settings", summary="Получить страницу настроек", tags=["Страницы"])
+def get_settings_page():
     return FileResponse("html/Settings.html")
 
 
 # Зарегистрировать пользователя
-@app.post("/users/register")
+@app.post("/users/register", summary="Регистрация пользователя", tags=["Пользователи"])
 async def register_new_user(user_data: User, session: Session = Depends(get_session)):
+    """
+    Регистрирует нового пользователя в системе.
+    
+    - **name**: имя пользователя
+    - **login**: уникальный логин
+    - **password**: пароль пользователя
+    """
+    
     existing_user = session.exec(select(UserModel).where(UserModel.login == user_data.login)).first()
 
     if existing_user:
@@ -198,8 +206,14 @@ async def register_new_user(user_data: User, session: Session = Depends(get_sess
 
 
 # Авторизовать пользователя
-@app.post("/users/login")
+@app.post("/users/login", summary="Авторизация пользователя", tags=["Пользователи"])
 async def login_user(user_data: UserLogin, session: Session = Depends(get_session)):
+    """
+    Авторизует пользователя и возвращает токен доступа.
+
+    - **login**: логин пользователя
+    - **password**: пароль пользователя
+    """
     user = session.exec(select(UserModel).where(UserModel.login == user_data.login)).first()
 
     if user and verify_password(user_data.password, user.password):
@@ -210,8 +224,12 @@ async def login_user(user_data: UserLogin, session: Session = Depends(get_sessio
 
 
 # Получить информацию о пользователе
-@app.get("/users/me")
+@app.get("/users/me", summary="Получить инфорацию о текущем пользователе", tags=["Пользователи"])
 async def get_info_about_me(token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    """
+    Возвращает информацию о пользователе.
+    Требуется авторизация с использованием токена доступа.
+    """
     user_login = decode_access_token(token)
 
     user = session.exec(select(UserModel).options(joinedload(UserModel.role)).where(UserModel.login == user_login)).first()
@@ -230,8 +248,12 @@ async def get_info_about_me(token: Annotated[str, Depends(oauth2_scheme)], sessi
 
 
 # Удалить пользователя
-@app.delete("/users/me/delete")
+@app.delete("/users/me/delete", summary="Удалить текущего пользователя", tags=["Пользователи"])
 async def delete_user(token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    """
+    Удаляет текущего пользователя из системы.
+    Требуется авторизация с использованием токена доступа.
+    """
     user_login = decode_access_token(token)
 
     user = session.exec(select(UserModel).options(joinedload(UserModel.role)).where(UserModel.login == user_login)).first()
@@ -245,36 +267,20 @@ async def delete_user(token: Annotated[str, Depends(oauth2_scheme)], session: Se
     return JSONResponse({"message": "Пользователь удален"}, status_code=200)
 
 
-# Получить все задачи конкретного пользователя
-@app.get("/users/me/tasks")
-async def get_user_tasks(token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
-    user_login = decode_access_token(token)
-
-    user = session.exec(select(UserModel).where(UserModel.login == user_login)).first()
-
-    if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
-
-    tasks = session.exec(select(TaskModel).options(joinedload(TaskModel.importance), joinedload(TaskModel.status)).filter(TaskModel.user_id == user.id)).all()
-
-    tasks_data = [
-        {
-            "id": task.id,
-            "name": task.name,
-            "description": task.description,
-            "importance": task.importance.name,
-            "importance_id": task.importance_id,
-            "status": task.status.name,
-            "deadline": task.deadline.isoformat() if task.deadline else None
-        } for task in tasks
-    ]
-
-    return JSONResponse({"Tasks": tasks_data}, status_code=200)
-
-
 # Обновить инфорацию о пользователе
-@app.put("/users/me/update")
+@app.put("/users/me/update", summary="Обновить информацию о текущем пользователе", tags=["Пользователи"])
 async def update_user(user_data: UserUpdate, token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    """
+    Обновляет информацию о текущем пользователе
+    Требуется авторизация с использованием токена доступа.
+
+    Поля для обновления: 
+    - **name**: Имя пользователя
+    - **login**: Логин пользователя
+    - **password**: Пароль
+    - **role_id**: Роль
+    - **image**: Изображение пользователя
+    """
     user_login = decode_access_token(token)
 
     user = session.exec(select(UserModel).where(UserModel.login == user_login)).first()
@@ -306,9 +312,46 @@ async def update_user(user_data: UserUpdate, token: Annotated[str, Depends(oauth
     return JSONResponse({"message": "Пользователь успешно обновлен"}, status_code=200)
 
 
+# Получить все задачи текущего пользователя
+@app.get("/users/me/tasks", summary="Получить все задачи текущего пользователя", tags=["Задачи"])
+async def get_user_tasks(token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    """
+    Возвращает список задач текущего пользователя.
+    Требуется авторизация с использованием токена доступа.
+    """
+    user_login = decode_access_token(token)
+
+    user = session.exec(select(UserModel).where(UserModel.login == user_login)).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    tasks = session.exec(select(TaskModel).options(joinedload(TaskModel.importance), joinedload(TaskModel.status)).filter(TaskModel.user_id == user.id)).all()
+
+    tasks_data = [
+        {
+            "id": task.id,
+            "name": task.name,
+            "description": task.description,
+            "importance": task.importance.name,
+            "importance_id": task.importance_id,
+            "status": task.status.name,
+            "deadline": task.deadline.isoformat() if task.deadline else None
+        } for task in tasks
+    ]
+
+    return JSONResponse({"Tasks": tasks_data}, status_code=200)
+
+
 # Получить задачу по ID
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", summary="Получить задачу по ID", tags=["Задачи"])
 async def get_task_by_id(task_id: int, token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    """
+    Возвращает информацию о задаче по её ID.
+    Требуется авторизация с использованием токена доступа.
+
+    Параметр пути: **task_id**
+    """
     task = session.exec(select(TaskModel).options(joinedload(TaskModel.importance), joinedload(TaskModel.status)).filter(TaskModel.id == task_id)).first()
 
     if not task:
@@ -327,8 +370,18 @@ async def get_task_by_id(task_id: int, token: Annotated[str, Depends(oauth2_sche
 
 
 # Добавить задачу к конкретному пользователю
-@app.post("/users/me/tasks/add")
+@app.post("/users/me/tasks/add", summary="Добавить новую задачу текущему пользователю", tags=["Задачи"])
 async def add_new_task(task_data: Task, token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    """
+    Добавляет новую задачу текущему пользователю.
+    Требуется авторизация с использованием токена доступа.
+
+    Поля для добавления задачи:
+    - **name**: Название задачи
+    - **descripton**: Описание задачи
+    - **importance_id**: ID важности задачи
+    - **deadline**: Срок выполнения задачи
+    """
     user_login = decode_access_token(token)
 
     user = session.exec(select(UserModel).where(UserModel.login == user_login)).first()
@@ -353,8 +406,19 @@ async def add_new_task(task_data: Task, token: Annotated[str, Depends(oauth2_sch
 
 
 # Обновить информацию о задаче
-@app.put("/tasks/{task_id}/update")
+@app.put("/tasks/{task_id}/update", summary="Обновить информацию о задаче", tags=["Задачи"])
 async def update_task(task_data: TaskUpdate, task_id: int, token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    """
+    Обновляет информацию о задаче по её ID.
+    Требуется авторизация с использованием токена доступа.
+
+    Поля для обновления:
+    - **name**: Название задачи
+    - **descripton**: Описание задачи
+    - **importance_id**: ID важности задачи
+    - **status_id**: ID статуса задачи
+    - **deadline**: Срок выполнения задачи
+    """
     task = session.exec(select(TaskModel).filter(TaskModel.id == task_id)).first()
 
     if not task:
@@ -371,17 +435,19 @@ async def update_task(task_data: TaskUpdate, task_id: int, token: Annotated[str,
     if task_data.deadline:
         task.deadline = datetime.fromisoformat(task_data.deadline)
 
-
     session.add(task)
     session.commit()
-    
     
     return JSONResponse({"message": "Задача успешно обновлена"}, status_code=200)
 
 
 # Получить список ролей
-@app.get("/roles")
+@app.get("/roles", summary="Получить список ролей", tags=["Пользователи"])
 async def get_roles(token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    """
+    Возвращает список всех ролей в системе.
+    Требуется авторизация с использованием токена доступа.
+    """
     roles = session.exec(select(RoleModel)).all()
 
     if not roles:
